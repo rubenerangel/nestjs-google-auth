@@ -27,7 +27,7 @@ export class UsersService {
   ];
 
   findByEmail(email: string): Promise<User | undefined> {
-    const user = this.users.find((user: User) => user.email === email);
+    const user = this.users.find((user) => user.email === email);
 
     if (user) {
       return Promise.resolve(user);
@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   findOne(id: number): Promise<User | undefined> {
-    const user = this.users.find((user: User) => user.id === id);
+    const user = this.users.find((user) => user.id === id);
 
     if (user) {
       return Promise.resolve(user);
