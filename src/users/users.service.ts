@@ -17,12 +17,17 @@ export class UsersService {
       email: 'john@gmail.com',
       password: 'johnPass',
     },
-
     {
       id: 2,
       name: 'Gary',
       email: 'gary@gmail.com',
       password: 'garyPass',
+    },
+    {
+      id: 3,
+      name: 'Ruben',
+      email: 'rubenrang@gmail.com',
+      password: 'rubenrang',
     },
   ];
 

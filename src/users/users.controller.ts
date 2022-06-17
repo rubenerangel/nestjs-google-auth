@@ -10,7 +10,7 @@ export class UsersController {
   @Get('me')
   me(@Req() request) {
     const userId = request.user.userId;
-    console.log(userId, 'userId');
+    
     return this.usersService.findOne(userId);
   }
 }

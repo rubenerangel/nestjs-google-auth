@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import { User } from '../users/entities/user.entity';
+import { Auth, google } from 'googleapis';
 
 import { UsersService } from '../users/users.service';
 import RefreshToken from './entities/refresh-token.entity';
@@ -8,12 +9,35 @@ import RefreshToken from './entities/refresh-token.entity';
 @Injectable()
 export class AuthService {
   private refreshTokens: RefreshToken[] = [];
+  private oauthClient: Auth.OAuth2Client;
 
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService) {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    this.oauthClient = new google.auth.OAuth2(clientId, clientSecret);
+  }
+
+  async loginGoogleUser(
+    token: string,
+    values: {userAgent: string, ipAddress: string}
+  ): Promise<{accessToken: string, refreshToken: string} | undefined>{
+    try {
+      const tokenInfo = await this.oauthClient.getTokenInfo(token);
+      console.log(tokenInfo, 'tokenInfo');
+      const user = await this.userService.findByEmail(tokenInfo.email);
+      if (user) {
+        return this.newRefreshAndAccessToken(user, values)
+      }
+      return undefined;
+    } catch (e) {
+      console.log(e);
+    }
+    
+  }
 
   async refresh(refreshStr: string): Promise<string | undefined>{
     const refreshToken = await this.retrieveRefreshToken(refreshStr);
-    console.log(refreshToken, 'RefreshToken');
+    
     if (!refreshToken) {
       return undefined;
     }
@@ -110,5 +134,16 @@ export class AuthService {
     this.refreshTokens = this.refreshTokens.filter(
       (refreshtoken) => refreshtoken.id !== refreshToken.id,
     )
+  }
+
+  googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google'
+    }
+
+    return {
+      message: 'User information from google',
+      user: req.user
+    }
   }
 }
