@@ -32,7 +32,6 @@ export class AuthService {
     } catch (e) {
       console.log(e);
     }
-    
   }
 
   async refresh(refreshStr: string): Promise<string | undefined>{
